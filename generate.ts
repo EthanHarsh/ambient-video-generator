@@ -12,16 +12,14 @@ try {
   );
 
   const videoResolution = RESOLUTIONS["4k"].string;
-  const videoLengths = new Array(1).fill(Effect.runSync(getRandomVideoLengthSeconds(undefined)));
+  const videoLength = Effect.runSync(getRandomVideoLengthSeconds(undefined))
 
-  for (const videoLength of videoLengths) {
-    await generateVideo({
-      audioFilePath: audioFilePath,
-      backgroundImagePath: backgroundImagePath,
-      videoLength,
-      videoResolution,
-    });
-  }
+  await generateVideo({
+    audioFilePath: audioFilePath,
+    backgroundImagePath: backgroundImagePath,
+    videoLength,
+    videoResolution,
+  });
 } catch (error) {
   console.error(error);
 } finally {
