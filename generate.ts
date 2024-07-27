@@ -3,16 +3,14 @@ import { extname } from "path";
 import ffmpeg from "fluent-ffmpeg";
 // @ts-ignore
 import Vibrant = require("node-vibrant");
-import { findDefaultAudioFile } from "./readInputs";
+import { findDefaultAudioFile, findDefaultBackgroundImage } from "./readInputs";
 import { Effect } from "effect";
 
 console.time("generate");
 
 try {
   const audioFilePath = await Effect.runPromise(findDefaultAudioFile());
-  const backgroundImagePath = (await readdir("./background")).find(
-    (file) => extname(file) === ".png",
-  );
+  const backgroundImagePath = await Effect.runPromise(findDefaultBackgroundImage());
 
   if (!audioFilePath) {
     throw new Error("No audio file found");
@@ -31,7 +29,7 @@ try {
   for (const videoLength of videoLengths) {
     await generateVideo({
       audioFilePath: audioFilePath,
-      backgroundImagePath: `./background/${backgroundImagePath}`,
+      backgroundImagePath: backgroundImagePath,
       videoLength,
       videoResolution,
     });
