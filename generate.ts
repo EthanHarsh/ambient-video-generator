@@ -1,29 +1,19 @@
 import ffmpeg from "fluent-ffmpeg";
-// @ts-ignore
-import Vibrant = require("node-vibrant");
-import { findDefaultAudioFile, findDefaultBackgroundImage } from "./readInputs";
+import { findDefaultAudioFile, findDefaultBackgroundImage } from "./read";
 import { Effect } from "effect";
-
-console.time("generate");
+import { RESOLUTIONS } from "./video/constants";
+import { getRandomVideoLengthSeconds } from "./time/videoLength";
+import { secondsToHours } from "./time";
 
 try {
   const audioFilePath = await Effect.runPromise(findDefaultAudioFile());
-  const backgroundImagePath = await Effect.runPromise(findDefaultBackgroundImage());
+  const backgroundImagePath = await Effect.runPromise(
+    findDefaultBackgroundImage(),
+  );
 
-  if (!audioFilePath) {
-    throw new Error("No audio file found");
-  }
+  const videoResolution = RESOLUTIONS["4k"].string;
+  const videoLengths = new Array(1).fill(Effect.runSync(getRandomVideoLengthSeconds(undefined)));
 
-  if (!backgroundImagePath) {
-    throw new Error("No background image found");
-  }
-
-  const videoResolution = "3840x2160";
-  const videoLengths = new Array(12)
-    .fill(null)
-    .map((_, index) => hoursToSeconds(index + 1));
-
-  
   for (const videoLength of videoLengths) {
     await generateVideo({
       audioFilePath: audioFilePath,
@@ -35,24 +25,7 @@ try {
 } catch (error) {
   console.error(error);
 } finally {
-  console.timeEnd("generate");
   process.exit(0);
-}
-
-function hoursToSeconds(hours: number) {
-  return hours * 60 * 60;
-}
-
-function secondsToHours(seconds: number) {
-  return seconds / 60 / 60;
-}
-
-async function getScalingBarColor(backgroundImagePath: string) {
-  const vibrant = new Vibrant(backgroundImagePath);
-  const palette = await vibrant.getPalette();
-  const color = palette.DarkMuted?.getHex();
-  console.log("color", color);
-  return color;
 }
 
 async function generateVideo({
@@ -88,7 +61,7 @@ async function generateVideo({
       .videoCodec("h264_videotoolbox")
       .audioCodec("flac")
       .outputOptions(["-pix_fmt yuv420p", "-shortest", "-r 24"])
-      .saveToFile(`/Volumes/T7/ambient-videos-tests/${videoName}.mp4`);
+      .saveToFile(`./${videoName}.mp4`);
 
     command.on("start", (commandLine) => {
       console.log("Spawned FFmpeg with command: " + commandLine);
