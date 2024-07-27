@@ -1,5 +1,3 @@
-import { readdir } from "fs/promises";
-import { extname } from "path";
 import ffmpeg from "fluent-ffmpeg";
 // @ts-ignore
 import Vibrant = require("node-vibrant");
