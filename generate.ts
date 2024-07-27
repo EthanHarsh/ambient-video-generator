@@ -3,13 +3,13 @@ import { extname } from "path";
 import ffmpeg from "fluent-ffmpeg";
 // @ts-ignore
 import Vibrant = require("node-vibrant");
+import { findDefaultAudioFile } from "./readInputs";
+import { Effect } from "effect";
 
 console.time("generate");
 
 try {
-  const audioFilePath = (await readdir("./audio")).find(
-    (file) => extname(file) === ".wav",
-  );
+  const audioFilePath = await Effect.runPromise(findDefaultAudioFile());
   const backgroundImagePath = (await readdir("./background")).find(
     (file) => extname(file) === ".png",
   );
@@ -30,7 +30,7 @@ try {
   
   for (const videoLength of videoLengths) {
     await generateVideo({
-      audioFilePath: `./audio/${audioFilePath}`,
+      audioFilePath: audioFilePath,
       backgroundImagePath: `./background/${backgroundImagePath}`,
       videoLength,
       videoResolution,
