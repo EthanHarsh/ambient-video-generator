@@ -1,5 +1,7 @@
+import { Effect } from "effect";
 import {
   findFileFromDirectoryByExtension,
+  findFilesFromDirectoryByExtension,
   readFileFromDirectoryByExtension,
 } from "./common";
 import { join } from "path";
@@ -25,4 +27,11 @@ export function findDefaultBackgroundImage() {
     directoryPath: join(__dirname, "../background"),
     extension: ".png",
   });
+}
+
+export function findMultiImageInDefaultDirectory() {
+  return findFilesFromDirectoryByExtension({
+    directoryPath: join(__dirname, "../image"),
+    extension: ".png",
+  }).pipe(Effect.map((images) => images.map((image) => image.path)));
 }

@@ -1,86 +1,29 @@
-import ffmpeg from "fluent-ffmpeg";
-import { findDefaultAudioFile, findDefaultBackgroundImage } from "./read";
 import { Effect } from "effect";
-import { RESOLUTIONS } from "./video/constants";
-import { getRandomVideoLengthSeconds } from "./time/videoLength";
-import { secondsToHours } from "./time";
 
-try {
-  const audioFilePath = await Effect.runPromise(findDefaultAudioFile());
-  const backgroundImagePath = await Effect.runPromise(
-    findDefaultBackgroundImage(),
-  );
+import { findDefaultAudioFile } from "./read";
+import { secondsToHours, getRandomVideoLengthSeconds } from "./time";
+import { generateVideo, getVideoNameFromPath, RESOLUTIONS } from "./video";
+import { getSettings } from "./cli";
 
+const main = Effect.gen(function* () {
+  const audioFilePath = yield* findDefaultAudioFile();
+  const { image: backgroundImages } = yield* getSettings();
   const videoResolution = RESOLUTIONS["4k"].string;
-  const videoLength = Effect.runSync(getRandomVideoLengthSeconds(undefined))
 
-  await generateVideo({
-    audioFilePath: audioFilePath,
-    backgroundImagePath: backgroundImagePath,
-    videoLength,
-    videoResolution,
-  });
-} catch (error) {
-  console.error(error);
-} finally {
-  process.exit(0);
-}
-
-async function generateVideo({
-  audioFilePath,
-  backgroundImagePath,
-  videoLength,
-  videoResolution,
-}: {
-  audioFilePath: string;
-  backgroundImagePath: string;
-  videoLength: number;
-  videoResolution: string;
-}) {
-  return new Promise<void>(async (resolve, reject) => {
-    const command = ffmpeg();
-    const videoName = `${secondsToHours(videoLength)}hrs`;
-
-    command
-      .input(backgroundImagePath)
-      .loop(videoLength)
-      .input(audioFilePath)
-      .inputOptions(["-stream_loop -1"])
-      .complexFilter([
-        {
-          filter: "scale",
-          options: {
-            w: videoResolution.split("x")[0],
-            h: videoResolution.split("x")[1],
-            force_original_aspect_ratio: "increase",
-          },
-        },
-      ])
-      .videoCodec("h264_videotoolbox")
-      .audioCodec("flac")
-      .outputOptions(["-pix_fmt yuv420p", "-shortest", "-r 24"])
-      .saveToFile(`./${videoName}.mp4`);
-
-    command.on("start", (commandLine) => {
-      console.log("Spawned FFmpeg with command: " + commandLine);
+  console.log(`Generating ${backgroundImages.length} videos`);
+  for (const backgroundImagePath of backgroundImages) {
+    const videoLength = yield* getRandomVideoLengthSeconds(undefined);
+    console.log(`Generating vide of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath)}`);
+    const results = yield* generateVideo({
+      audioFilePath: audioFilePath,
+      backgroundImagePath: backgroundImagePath,
+      videoLength,
+      videoResolution,
     });
+    console.log(
+      `Generated video of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath)}`,
+    );
+  }
+});
 
-    command.on("progress", (progress) => {
-      console.log(`Processing ${videoName}: ${JSON.stringify(progress)}`);
-    });
-
-    command.on("end", () => {
-      console.log("Processing finished!");
-      resolve();
-    });
-
-    command.on("error", (err, stdout, stderr) => {
-      console.error("Error: " + err.message);
-      console.error("FFmpeg stdout: " + stdout);
-      console.error("FFmpeg stderr: " + stderr);
-      reject();
-    });
-
-    command.run();
-  });
-}
+console.log(await Effect.runPromiseExit(main));

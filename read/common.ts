@@ -61,6 +61,16 @@ export function findFileFromDirectoryByExtension({
   });
 }
 
+export function findFilesFromDirectoryByExtension({
+  directoryPath,
+  extension,
+}: ReadFileFromDirectory) {
+  return Effect.gen(function* () {
+    const files = yield* getDirectoryContents(directoryPath);
+    return files.filter((file) => file.extension === extension);
+  });
+}
+
 interface FindFileByExtension {
   files: FileMetaData[];
   extension: string;
