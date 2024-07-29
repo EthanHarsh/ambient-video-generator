@@ -1,4 +1,6 @@
 # ambient-video-generator
-
-# Single Test Completion Time
-162870.69 - MacBook Pro M1
+## Development Feature List
+- Convert webp to png
+- Authenticate with Google
+- Upload Videos to Youtube
+- Programmatically select multiple audio clips to create new ambiences
