@@ -39,7 +39,7 @@ export function generateVideo({
           .videoCodec("h264_videotoolbox")
           .audioCodec("flac")
           .outputOptions(["-pix_fmt yuv420p", "-shortest", "-r 24"])
-          .saveToFile(`./${videoName}.mp4`);
+          .saveToFile(`/Volumes/T7/ambience-videos/${videoName}.mp4`);
 
         command.on("start", (commandLine) => {
           console.log("Spawned FFmpeg with command: " + commandLine);

@@ -15,7 +15,7 @@ export function readImage({ directoryPath, extension }: ReadImageFile) {
   return readFileFromDirectoryByExtension({ directoryPath, extension });
 }
 
-export function readDefaultBackgroundImage() {
+export function readDefaultBackgroundImage() {6
   return readImage({
     directoryPath: join(__dirname, "../image"),
     extension: ".png",
@@ -31,7 +31,7 @@ export function findDefaultBackgroundImage() {
 
 export function findMultiImageInDefaultDirectory() {
   return findFilesFromDirectoryByExtension({
-    directoryPath: join(__dirname, "../image"),
+    directoryPath: join(__dirname, "../background"),
     extension: ".png",
   }).pipe(Effect.map((images) => images.map((image) => image.path)));
 }
