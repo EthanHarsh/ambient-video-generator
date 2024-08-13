@@ -26,7 +26,6 @@ export function generateVideo({
           .loop(videoLength)
           .input(audioFilePath)
           .inputOptions(["-stream_loop -1"])
-          .audioFilter('afade=t=in:ss=0:d=3,afade=t=out:st=25:d=3')
           .complexFilter([
             {
               filter: "scale",
