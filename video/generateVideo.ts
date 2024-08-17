@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import ffmpeg from "fluent-ffmpeg";
-import { getVideoNameFromPath } from "./constants";
+import { audioCodec, audioInputOptions, buildComplexFilter, getVideoNameFromPath, outputOptions, videoCodec } from "./constants";
 
 interface GenerateVideoParams {
   audioFilePath: string;
@@ -25,21 +25,12 @@ export function generateVideo({
           .input(backgroundImagePath)
           .loop(videoLength)
           .input(audioFilePath)
-          .inputOptions(["-stream_loop -1"])
-          .complexFilter([
-            {
-              filter: "scale",
-              options: {
-                w: videoResolution.split("x")[0],
-                h: videoResolution.split("x")[1],
-                force_original_aspect_ratio: "increase",
-              },
-            },
-          ])
-          .videoCodec("h264_videotoolbox")
-          .audioCodec("flac")
-          .outputOptions(["-pix_fmt yuv420p", "-shortest", "-r 24"])
-          .saveToFile(`/Volumes/T7/ambience-videos/${videoName}.mp4`);
+          .inputOptions(audioInputOptions)
+          .complexFilter(buildComplexFilter(videoResolution))
+          .videoCodec(videoCodec)
+          .audioCodec(audioCodec)
+          .outputOptions(outputOptions)
+          .saveToFile(`./out/${videoName}.mp4`);
 
         command.on("start", (commandLine) => {
           console.log("Spawned FFmpeg with command: " + commandLine);
