@@ -1,6 +1,6 @@
 export interface GenerateVideoParams {
   audioFilePath: string;
-  backgroundImagePath: string;
+  backgroundPath: string;
   videoLength: number;
   videoResolution: string;
 }

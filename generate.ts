@@ -14,14 +14,19 @@ const main = Effect.gen(function* () {
   for (const backgroundImagePath of backgroundImages) {
     const videoLength = yield* getRandomVideoLengthSeconds(undefined);
     console.log(`Generating vide of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath)}`);
-    const results = yield* generateVideo({
-      audioFilePath: audioFilePath,
-      backgroundImagePath: backgroundImagePath,
-      videoLength,
-      videoResolution,
-    });
+    const results = yield* generateVideo(
+      {
+        generatorParams: {
+          audioFilePath: audioFilePath,
+          backgroundPath: backgroundImagePath,
+          videoLength,
+          videoResolution,
+        },
+        generatorName: "stillBackground",
+      }
+    );
     console.log(
-      `Generated video of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath)}`,
+      `Generated video of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath)}. Results: ${JSON.stringify(results)}`,
     );
   }
 });

@@ -2,26 +2,26 @@ import { audioCodec, buildComplexFilter, getVideoNameFromPath, inputOptions, out
 import type { GenerateVideoParams } from "./types";
 import ffmpeg from "fluent-ffmpeg";
 
-export const stillBackgroundGenerator = ({
+export const backgroundVideoGenerator = ({
     audioFilePath,
     backgroundPath,
     videoLength,
     videoResolution,
   }: GenerateVideoParams) => () => {
     return new Promise<string>(async (resolve, reject) => {
-      const command = ffmpeg();
-      const videoName = getVideoNameFromPath(backgroundPath);
+        const command = ffmpeg();
+        const videoName = getVideoNameFromPath(backgroundPath);
 
-      command
-        .input(backgroundPath)
-        .loop(videoLength)
-        .input(audioFilePath)
-        .inputOptions(inputOptions)
-        .complexFilter(buildComplexFilter(videoResolution))
-        .videoCodec(videoCodec)
-        .audioCodec(audioCodec)
-        .outputOptions(outputOptions)
-        .saveToFile(`./out/${videoName}.mp4`);
+        command
+          .input(backgroundPath)
+          .inputOptions(["-stream_loop -1"]) // Loop the video indefinitely
+          .input(audioFilePath)
+          .inputOptions(inputOptions)
+          .complexFilter(buildComplexFilter(videoResolution))
+          .videoCodec(videoCodec)
+          .audioCodec(audioCodec)
+          .outputOptions(outputOptions.concat([`-t ${videoLength}`]))
+          .saveToFile(`./out/${videoName}.mp4`);
 
       command.on("start", (commandLine) => {
         console.log("Spawned FFmpeg with command: " + commandLine);

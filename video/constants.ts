@@ -19,7 +19,7 @@ export const buildComplexFilter: (videoResolution: string) => ffmpeg.FilterSpeci
     },
   },
 ]
-export const audioInputOptions = ["-stream_loop -1"]
+export const inputOptions = ["-stream_loop -1"]
 export const videoCodec = "h264_videotoolbox";
 export const audioCodec = "flac";
 export const outputOptions = ["-pix_fmt yuv420p", "-shortest", "-r 24"];
