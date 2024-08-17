@@ -3,6 +3,7 @@ import { getFlags, getImageFlag } from "./flags";
 import {
   findDefaultBackgroundImage,
   findMultiImageInDefaultDirectory,
+  findMultiVideoInDefaultDirectory,
 } from "../read";
 
 export function getSettings() {
@@ -16,7 +17,8 @@ export function getSettings() {
 }
 
 export const getImageReader = Match.type<{ image: string | undefined }>().pipe(
-  Match.when({ image: "multi" }, () => findMultiImageInDefaultDirectory()),
+  Match.when({ image: "multi-still" }, () => findMultiImageInDefaultDirectory()),
+  Match.when({ image: "multi-video" }, () => findMultiVideoInDefaultDirectory()),
   Match.orElse(() =>
     findDefaultBackgroundImage().pipe(Effect.map((image) => [image])),
   ),
