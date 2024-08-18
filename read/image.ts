@@ -35,3 +35,10 @@ export function findMultiImageInDefaultDirectory() {
     extension: ".png",
   }).pipe(Effect.map((images) => images.map((image) => image.path)));
 }
+
+export function findMultiVideoInDefaultDirectory() {
+  return findFilesFromDirectoryByExtension({
+    directoryPath: join(__dirname, "../background"),
+    extension: ".mp4",
+  }).pipe(Effect.map((images) => images.map((image) => image.path)));
+}
