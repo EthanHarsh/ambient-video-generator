@@ -2,7 +2,7 @@ import { audioCodec, buildComplexFilter, getVideoNameFromPath, inputOptions, out
 import type { GenerateVideoParams } from "./types";
 import ffmpeg from "fluent-ffmpeg";
 
-export const backgroundVideoGenerator = ({
+export const videoBackgroundGenerator = ({
     audioFilePath,
     backgroundPath,
     videoLength,
@@ -10,14 +10,14 @@ export const backgroundVideoGenerator = ({
   }: GenerateVideoParams) => () => {
     return new Promise<string>(async (resolve, reject) => {
         const command = ffmpeg();
-        const videoName = getVideoNameFromPath(backgroundPath);
+        const videoName = getVideoNameFromPath(backgroundPath, videoLength);
 
         command
           .input(backgroundPath)
-          .inputOptions(["-stream_loop -1"]) // Loop the video indefinitely
+          .inputOptions(inputOptions)
+          .duration(videoLength)
           .input(audioFilePath)
           .inputOptions(inputOptions)
-          .complexFilter(buildComplexFilter(videoResolution))
           .videoCodec(videoCodec)
           .audioCodec(audioCodec)
           .outputOptions(outputOptions.concat([`-t ${videoLength}`]))

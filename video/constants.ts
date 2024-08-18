@@ -1,11 +1,12 @@
 import  ffmpeg  from "fluent-ffmpeg";
+import { secondsToHours } from "../time";
 
 export const RESOLUTIONS = {
   "4k": { width: 3840, height: 2160, string: "3840x2160" },
 };
 
-export function getVideoNameFromPath(path: string) {
-  return path.split("/").pop()?.split(".")[0];
+export function getVideoNameFromPath(path: string, time: number) {
+  return `${path.split("/").pop()?.split(".")[0]}-${secondsToHours(time)}hrs`;
 }
 
 // FFMPEG constants
