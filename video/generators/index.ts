@@ -1,7 +1,7 @@
-import { backgroundVideoGenerator } from './backgroundVideo';
+import { videoBackgroundGenerator } from './videoBackground';
 import { stillBackgroundGenerator } from './stillBackground';
 
 export const generators = {
     stillBackground: stillBackgroundGenerator,
-    backgroundVideo: backgroundVideoGenerator,
+    videoBackground: videoBackgroundGenerator,
 }

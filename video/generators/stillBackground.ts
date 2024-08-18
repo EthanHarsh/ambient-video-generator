@@ -10,7 +10,7 @@ export const stillBackgroundGenerator = ({
   }: GenerateVideoParams) => () => {
     return new Promise<string>(async (resolve, reject) => {
       const command = ffmpeg();
-      const videoName = getVideoNameFromPath(backgroundPath);
+      const videoName = getVideoNameFromPath(backgroundPath, videoLength);
 
       command
         .input(backgroundPath)

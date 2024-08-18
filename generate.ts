@@ -7,13 +7,13 @@ import { getSettings } from "./cli";
 
 const main = Effect.gen(function* () {
   const audioFilePath = yield* findDefaultAudioFile();
-  const { image: backgroundImages } = yield* getSettings();
+  const { image: backgroundImages, generator } = yield* getSettings();
   const videoResolution = RESOLUTIONS["4k"].string;
 
   console.log(`Generating ${backgroundImages.length} videos`);
   for (const backgroundImagePath of backgroundImages) {
     const videoLength = yield* getRandomVideoLengthSeconds(undefined);
-    console.log(`Generating vide of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath)}`);
+    console.log(`Generating vide of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath, videoLength)}`);
     const results = yield* generateVideo(
       {
         generatorParams: {
@@ -22,11 +22,11 @@ const main = Effect.gen(function* () {
           videoLength,
           videoResolution,
         },
-        generatorName: "stillBackground",
+        generatorName: generator,
       }
     );
     console.log(
-      `Generated video of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath)}. Results: ${JSON.stringify(results)}`,
+      `Generated video of length ${secondsToHours(videoLength)}hrs titled: ${getVideoNameFromPath(backgroundImagePath, videoLength)}. Results: ${JSON.stringify(results)}`,
     );
   }
 });
